@@ -1,48 +1,45 @@
-Boilerplate project
+Multithreading HW1
 ===============
-This project is a ready-to use boilerplate for "It's not a bug, It's a feature" Java course.
 
-#### How-to use
+#### 1 Name Printer
 
-1. `git clone https://github.com/ChangeRequest/boilerplate-project.git name_of_new_project`
-2. `git remote remove origin`
-3. `git remote add origin https://github.com/new_repo/name_of_new_project.git`
-4. Update project name in `settings.gradle`
-5. Update `README.MD` to match newly created repository.
-6. Update Author name in `LICENSE` (if needed)
-7. Continue working in your new ready-to-use repository.
+Take a look at **NamePrinter** interface. Every class which implements this interface should save name and print it specified amount of times.
+Interface defines several method:
 
-####Already configured parts
+1. **setPrintName** - set name which should be printed
+2. **setWriter** - set writer which should be used for printing name
+3. **setCount** - set how many times class should print name of thread
+4. **setInterval** - set interval between
 
-* Travis-CI configuration file
-* .gitignore file
-* build.gradle (already contains all needed imports)
-* License file with `Apache License Version 2.0`
-* empty package in src folder (`school.lemon.changerequest.java`)
+Implement interface NamePrinter and start thread with two different ways:
 
-#### Travis-CI configuration
-* Oracle JDK 8
-* Install step: `gradlew clean assemble`
-* Check step: `gradlew check`
+1. Implementing interface Runnable
+2. Extending class Thread
 
-#### .gitignore
-Already configured to ignore most of unwonted stuff:
-* eclipse ignores
-* IDEA ignores
-* Java and Groovy ignores
-* gradle and maven ignores
-* etc.
+**NOTE:** throw IllegalStateException if any of the parameters wasn't set. 
 
-#### build.gradle
-* group is `school.lemon.changerequest.java`
-* applied module from [gradle_common project]:
-  * commonModule
-  * javaModule
-  * testModule
-  * idea
-  * eclipse
+#### 2 Task Executor
 
+Implement TaskExecutor interface, class should be used for execution tasks in background.
 
-  
-[gradle_common project]: https://github.com/ChangeRequest/gradle_common
+Every task class should implement Task interface. There should be two different tasks:
+* Copy File. Copies specified file to specified folder.
+* Search for files. Recursively search for files which in specified directory. 
+Search criteria should be set via list of FileFilter instances.
 
+Task executor gets tasks for execution from TasksStorage. TasksStorage - interface which defines methods for working with tasks queue. 
+It should be implemented too. Please be sure, that your implementation is thread-safe, so tasks can be added/gotten from many threads.
+
+On task execution may occur exceptions. 
+If task failed the tries count for this task should be incremented and that task should be pushed back to the queue.
+If task failed 5 times - task shouldn't be added to the queue.
+
+Please read javadocs for more information for each class.
+
+Create Demo class to show how all these stuff work together.
+Demo class should do next things:
+1. Create 3 objects of tasks executor (let's call them just "executors");
+2. Create queue TasksStorage and add 3-4 tasks for coping very very big files and 15-20 tasks for finding files on disk in this queue;
+3. Run all executors in parallel in the main thread;
+4. The main thread should wait for finishing all tasks;
+5. After all tasks will be done the main thread should stop executors correctly.
